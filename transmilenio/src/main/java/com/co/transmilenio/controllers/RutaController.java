@@ -1,4 +1,6 @@
-package com.co.transmilenio.controllers;
+package com.co.transmilenio.controller;
+
+import com.co.transmilenio.dto.RutaDTO;
 import com.co.transmilenio.service.RutaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

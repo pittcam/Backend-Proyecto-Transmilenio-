@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RutaRepository extends JpaRepository<Ruta, Long> {
-    // No es necesario agregar métodos adicionales aquí, JPA proporcionará los métodos CRUD automáticamente
 }

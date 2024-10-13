@@ -1,79 +1,53 @@
 package com.co.transmilenio.service;
 
+import com.co.transmilenio.dto.RutaDTO;
 import com.co.transmilenio.model.Ruta;
 import com.co.transmilenio.repository.AsignacionRepository;
 import com.co.transmilenio.repository.RutaRepository;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class RutaService {
 
-    private final RutaRepository rutaRepository;
-    private final AsignacionRepository asignacionRepository;
+    @Autowired
+    private RutaRepository rutaRepository;
 
-    public RutaService(RutaRepository rutaRepository, AsignacionRepository asignacionRepository) {
-        this.rutaRepository = rutaRepository;
-        this.asignacionRepository = asignacionRepository;
-    }
+    @Autowired
+    private AsignacionRepository asignacionRepository;
 
-    // Convertir de entidad a DTO
-    private RutaDTO convertToDTO(Ruta ruta) {
-        RutaDTO dto = new RutaDTO();
-        dto.setId(ruta.getId());
-        dto.setNombre(ruta.getNombre());
-        dto.setHoraInicio(ruta.getHoraInicio());
-        dto.setHoraFin(ruta.getHoraFin());
-        dto.setDias(ruta.getDias());
-        dto.setEstaciones(ruta.getEstaciones().stream()
-                .map(Estacion::getNombre)
-                .collect(Collectors.toList()));
-        return dto;
-    }
+    @Autowired
+    private ModelMapper modelMapper;  // Inyectamos el ModelMapper
 
-    // Convertir de DTO a entidad
-    private Ruta convertToEntity(RutaDTO dto) {
-        Ruta ruta = new Ruta();
-        ruta.setId(dto.getId());
-        ruta.setNombre(dto.getNombre());
-        ruta.setHoraInicio(dto.getHoraInicio());
-        ruta.setHoraFin(dto.getHoraFin());
-        ruta.setDias(dto.getDias());
-        // Aquí debes resolver las estaciones a partir de los nombres o IDs
-        // ruta.setEstaciones(resolverEstaciones(dto.getEstaciones()));
-        return ruta;
-    }
-
-    // Métodos del servicio ahora usan DTOs
     public List<RutaDTO> listarRutas() {
         return rutaRepository.findAll().stream()
-                .map(this::convertToDTO)
+                .map(ruta -> modelMapper.map(ruta, RutaDTO.class))  // Convertimos de entidad a DTO
                 .collect(Collectors.toList());
     }
 
     public RutaDTO obtenerRutaPorId(Long id) {
         Ruta ruta = rutaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ruta no encontrada"));
-        return convertToDTO(ruta);
+        return modelMapper.map(ruta, RutaDTO.class);  // Convertimos a DTO
     }
 
     public RutaDTO crearRuta(RutaDTO rutaDTO) {
-        Ruta ruta = convertToEntity(rutaDTO);
+        Ruta ruta = modelMapper.map(rutaDTO, Ruta.class);  // Convertimos de DTO a entidad
         ruta = rutaRepository.save(ruta);
-        return convertToDTO(ruta);
+        return modelMapper.map(ruta, RutaDTO.class);  // Convertimos de vuelta a DTO
     }
 
     public RutaDTO actualizarRuta(Long id, RutaDTO rutaDTO) {
         Ruta rutaExistente = rutaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ruta no encontrada"));
-        rutaExistente.setNombre(rutaDTO.getNombre());
-        rutaExistente.setHoraInicio(rutaDTO.getHoraInicio());
-        rutaExistente.setHoraFin(rutaDTO.getHoraFin());
-        rutaExistente.setDias(rutaDTO.getDias());
-        // Actualización de estaciones omitida por ahora
+
+        modelMapper.map(rutaDTO, rutaExistente);  // Actualizamos los campos de la entidad
         rutaRepository.save(rutaExistente);
-        return convertToDTO(rutaExistente);
+        return modelMapper.map(rutaExistente, RutaDTO.class);  // Convertimos a DTO
     }
 
     public void eliminarRuta(Long id) {

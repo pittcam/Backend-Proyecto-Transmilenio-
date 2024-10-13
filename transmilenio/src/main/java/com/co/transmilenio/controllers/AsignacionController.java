@@ -1,5 +1,6 @@
 package com.co.transmilenio.controllers;
 
+import com.co.transmilenio.dto.AsignacionDTO;
 import com.co.transmilenio.service.AsignacionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,13 +19,13 @@ public class AsignacionController {
         return asignacionService.listarAsignaciones();
     }
 
-    @GetMapping("/existe-por-ruta/{rutaId}")
-    public boolean existeAsignacionPorRuta(@PathVariable Long rutaId) {
-        return asignacionService.existeAsignacionPorRuta(rutaId);
-    }
-
     @PostMapping
     public AsignacionDTO crearAsignacion(@RequestBody AsignacionDTO asignacionDTO) {
         return asignacionService.crearAsignacion(asignacionDTO);
+    }
+
+    @GetMapping("/existe-por-ruta/{rutaId}")
+    public boolean existeAsignacionPorRuta(@PathVariable Long rutaId) {
+        return asignacionService.existeAsignacionPorRuta(rutaId);
     }
 }
