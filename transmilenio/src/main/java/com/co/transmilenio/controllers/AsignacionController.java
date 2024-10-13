@@ -23,9 +23,4 @@ public class AsignacionController {
     public AsignacionDTO crearAsignacion(@RequestBody AsignacionDTO asignacionDTO) {
         return asignacionService.crearAsignacion(asignacionDTO);
     }
-
-    @GetMapping("/existe-por-ruta/{rutaId}")
-    public boolean existeAsignacionPorRuta(@PathVariable Long rutaId) {
-        return asignacionService.existeAsignacionPorRuta(rutaId);
-    }
 }

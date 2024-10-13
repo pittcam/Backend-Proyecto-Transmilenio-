@@ -1,4 +1,4 @@
-package com.co.transmilenio.controller;
+package com.co.transmilenio.controllers;
 
 import com.co.transmilenio.dto.RutaDTO;
 import com.co.transmilenio.service.RutaService;

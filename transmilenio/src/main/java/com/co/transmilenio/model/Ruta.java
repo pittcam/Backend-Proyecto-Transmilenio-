@@ -26,7 +26,7 @@ public class Ruta {
     private String horaFin;
 
     @ElementCollection
-    private Set<Character> dias;
+    private Set<Character> dias;  // Días que opera la ruta
 
     @ManyToMany
     @JoinTable(
@@ -35,4 +35,13 @@ public class Ruta {
             inverseJoinColumns = @JoinColumn(name = "estacion_id")
     )
     private Set<Estacion> estaciones = new HashSet<>();
+
+    // Validación de que horaFin sea mayor que horaInicio
+    @PrePersist
+    @PreUpdate
+    private void validarHorario() {
+        if (horaInicio.compareTo(horaFin) >= 0) {
+            throw new IllegalArgumentException("Hora de fin debe ser mayor que hora de inicio");
+        }
+    }
 }

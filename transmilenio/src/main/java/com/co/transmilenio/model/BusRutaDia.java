@@ -6,28 +6,28 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "asignacion")
-public class Asignacion {
+@Table(name = "bus_ruta_dia")
+public class BusRutaDia {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    private Conductor conductor;
+    @JoinColumn(name = "bus_id")
+    private Bus bus;
 
-    @ManyToMany
-    @JoinTable(
-            name = "asignacion_bus",
-            joinColumns = @JoinColumn(name = "asignacion_id"),
-            inverseJoinColumns = @JoinColumn(name = "bus_id")
-    )
-    private List<Bus> buses;
+    @ManyToOne
+    @JoinColumn(name = "ruta_id")
+    private Ruta ruta;
+
+    @ElementCollection
+    private Set<Character> dias;  // Días específicos en los que este bus tomará esta ruta
 }

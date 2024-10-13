@@ -5,15 +5,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AsignacionDTO {
+public class BusRutaDiaDTO {
 
     private Long id;
-    private Long conductorId;
-    private List<Long> busesIds;
+    private Long rutaId;  // Identificador de la ruta
+    private Set<Character> dias;  // Días específicos en los que el bus cumple esta ruta
 }
