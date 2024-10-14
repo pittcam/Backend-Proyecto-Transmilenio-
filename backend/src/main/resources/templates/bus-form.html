@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Bus</title>
+</head>
+<body>
+<h1>Edit Bus</h1>
+
+<form th:action="@{/bus/save}" th:object="${bus}" method="post">
+    <input type="hidden" th:name="id" th:value="${bus.id}"/>
+    <label for="numeroPlaca">Numero de Placa:</label>
+    <input type="text" id="numeroPlaca" th:field="*{numeroPlaca}" />
+    <br>
+    <label for="modelo">Modelo:</label>
+    <input type="text" id="modelo" th:field="*{modelo}" />
+    <br>
+    <button type="submit">Save</button>
+</form>
+
+<!-- Add this section for assigning conductors -->
+<h2>Assign Conductors</h2>
+<form th:action="@{/bus/assign}" method="post">
+    <input type="hidden" name="busId" th:value="${bus.id}" />
+    <label>Available Conductors:</label>
+    <br>
+    <div th:each="conductor : ${allConductors}">
+        <input type="checkbox" name="conductors" th:value="${conductor.id}"
+               th:checked="${bus.conductores.contains(conductor)}" />
+        <label th:text="${conductor.nombre}"></label>
+        <br>
+    </div>
+    <button type="submit">Assign Conductors</button>
+</form>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+    <link rel="stylesheet" th:href="@{/css/general.css}">
+    <title>Conductores</title>
+</head>
+
+<body>
+<div th:replace="fragments/menu :: menu"></div>
+<main>
+    <div class="container">
+        <h1>Conductores</h1>
+        <div class="search-container">
+            <form method="get" action="#" th:action="@{/conductor/search}">
+                <input type="text" id="searchText" name="searchText" placeholder="Digite el nombre del conductor">
+                <button type="submit">Buscar</button>
+            </form>
+        </div>
+        <div class="btn-container">
+            <a th:href="@{/conductor/add-form}" class="btn agregar-btn">Agregar Conductor</a>
+        </div>
+        <table class="entity-list">
+            <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Cédula</th>
+                <th>Teléfono</th>
+                <th>Dirección</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="c : ${conductores}">
+                <td th:text="${c.nombre}"></td>
+                <td th:text="${c.cedula}"></td>
+                <td th:text="${c.telefono}"></td>
+                <td th:text="${c.direccion}"></td>
+                <td>
+                    <a th:href="@{/conductor/view/{id}(id=${c.id})}" class="btn ver-btn">Ver buses</a>
+                    <a th:href="@{/conductor/edit-form/{id}(id=${c.id})}" class="btn editar-btn">Editar</a>
+                    <a th:href="@{/conductor/delete/{id}(id=${c.id})}" class="btn eliminar-btn">Eliminar</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+
+</html>

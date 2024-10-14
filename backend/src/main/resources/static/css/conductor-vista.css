@@ -1,0 +1,49 @@
+.tablaDetalles {
+    width: 100%; /* Asegura que la tabla use todo el ancho disponible */
+    margin-top: 20px;
+    background-color: white;
+    border-collapse: collapse; /* Elimina los espacios entre celdas */
+}
+
+.tablaDetalles th, .tablaDetalles td {
+    padding: 10px; /* Añade relleno a las celdas para mejorar la legibilidad */
+    border: 1px solid #ddd; /* Añade borde a las celdas */
+}
+
+.tablaDetalles th {
+    background-color: #ffcc00;
+    color: black;
+    text-align: center;
+}
+
+.tablaDetalles td {
+    text-align: center;
+}
+
+.btn-volverDetalle {
+    display: block;
+    width: 120px; /* Aumenta el ancho del botón para mejorar su aspecto */
+    padding: 10px 20px; /* Añade relleno al botón para que el texto esté bien posicionado */
+    margin: 20px auto; /* Centra el botón horizontalmente y agrega margen superior e inferior */
+    background-color: #ff7f00;
+    color: white;
+    border: none; /* Elimina el borde predeterminado del botón */
+    border-radius: 5px; /* Añade bordes redondeados al botón */
+    text-align: center; /* Alinea el texto al centro */
+    font-size: 16px; /* Ajusta el tamaño de la fuente para mayor claridad */
+    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+    text-decoration: none; /* Elimina el subrayado del enlace */
+}
+
+.btn-volverDetalle:hover {
+    background-color: #cc6f00; /* Cambia el color al pasar el mouse sobre el botón */
+}
+
+.detallesConductor {
+    max-width: 1200px;
+    margin: 30px auto; /* Margen superior e inferior y centra el contenido */
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px; /* Bordes redondeados para una apariencia más suave */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Efecto de sombra ligera para resaltar el contenedor */
+}

@@ -1,0 +1,64 @@
+
+/* Styles for the table */
+table.entity-list {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table.entity-list th,
+table.entity-list td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+table.entity-list th {
+    background-color: #007bff;
+    color: #fff;
+}
+
+table.entity-list tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+table.entity-list tr:hover {
+    background-color: #ddd;
+}
+
+/* Styles for action buttons */
+a.btnVer,
+a.btnEditar,
+a.btnEliminar {
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    color: #fff;
+    margin: 2px;
+    display: inline-block;
+    font-size: 14px;
+}
+
+a.btnVer {
+    background-color: #28a745;
+}
+
+a.btnVer:hover {
+    background-color: #218838;
+}
+
+a.btnEditar {
+    background-color: #ffc107;
+}
+
+a.btnEditar:hover {
+    background-color: #e0a800;
+}
+
+a.btnEliminar {
+    background-color: #dc3545;
+}
+
+a.btnEliminar:hover {
+    background-color: #c82333;
+}

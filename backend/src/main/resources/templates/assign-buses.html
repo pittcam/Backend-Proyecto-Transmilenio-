@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/general.css}">
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+    <link rel="stylesheet" th:href="@{/css/asignacion.css}">
+    <title>Asignar Buses</title>
+    <script>
+        function validateForm() {
+            var busChecked = false;
+            var horariosSelected = true;
+
+            // Verificar que al menos un bus esté seleccionado
+            document.querySelectorAll('input[name="busIds"]').forEach(function(busCheckbox) {
+                if (busCheckbox.checked) {
+                    busChecked = true;
+                    var horarioSelect = document.querySelector('select[name="horarioIds_' + busCheckbox.value + '"]');
+                    if (horarioSelect && horarioSelect.value === "") {
+                        horariosSelected = false; // Si un bus está seleccionado pero no hay horario, se marca como falso
+                    }
+                }
+            });
+
+            if (!busChecked) {
+                alert("Debe seleccionar al menos un bus.");
+                return false;
+            }
+
+            if (!horariosSelected) {
+                alert("Debe seleccionar un horario para cada bus seleccionado.");
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</head>
+<body>
+<div th:replace="fragments/menu :: menu"></div>
+<div class="container">
+    <h1>Asignar Buses al Conductor</h1>
+    <form th:action="@{/conductor/save-bus-assignments}" method="post" onsubmit="return validateForm()">
+        <input type="hidden" name="conductorId" th:value="${conductor.id}"/>
+
+        <h2>Buses y Horarios</h2>
+        <table class="bus-table">
+            <thead>
+            <tr>
+                <th>Seleccionar Bus</th>
+                <th>Bus</th>
+                <th>Horario</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="bus, iterStat : ${buses}">
+                <td><input type="checkbox" th:value="${bus.id}" name="busIds"/></td>
+                <td><span th:text="${bus.numeroPlaca}">Bus</span></td>
+                <td>
+                    <select th:name="'horarioIds_' + ${bus.id}" th:id="'horario_' + ${bus.id}">
+                        <option value="" disabled selected>Selecciona un horario</option>
+                        <option th:each="horario : ${horarios}"
+                                th:value="${horario.id}"
+                                th:text="${horario.horaInicio + ' - ' + horario.horaFin + ' (' + horario.dias + ')'}">Horario</option>
+                    </select>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <button type="submit">Guardar Asignaciones</button>
+    </form>
+
+    <!-- Enlace para volver a la lista de conductores -->
+    <a href="/conductor/list">Volver a la lista de conductores</a>
+</div>
+</body>
+</html>

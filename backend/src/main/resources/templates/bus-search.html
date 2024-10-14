@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+
+<body>
+
+<h1>Buscar Bus</h1>
+
+<form method="get" action="#" th:action="@{/bus/search}">
+    <label for="searchText">Buscar por número de placa</label>
+    <input type="text" id="searchText" name="searchText">
+    <button type="submit">Buscar</button>
+</form>
+
+<table class="entity-list">
+    <thead>
+    <tr>
+        <th>Número de Placa</th>
+        <th>Modelo</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <tr th:each="b : ${buses}">
+        <td th:text="${b.numeroPlaca}"></td>
+        <td th:text="${b.modelo}"></td>
+        <td>
+            <a th:href="@{/bus/view/{id}(id=${b.id})}" class="btnVer">Ver</a>
+            <a th:href="@{/bus/edit-form/{id}(id=${b.id})}" class="btnEditar">Editar</a>
+            <a th:href="@{/bus/delete/{id}(id=${b.id})}" class="btnEliminar">Eliminar</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+
+</html>
