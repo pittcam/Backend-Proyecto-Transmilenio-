@@ -20,21 +20,58 @@ public class RutaService {
     private RutaRepository rutaRepository;
 
     @Autowired
+    private EstacionRepository estacionRepository;
+
+    @Autowired
     private ModelMapper modelMapper;
 
     // Crear una nueva ruta
     public RutaDTO crearRuta(RutaDTO rutaDTO) {
-        Ruta ruta = modelMapper.map(rutaDTO, Ruta.class);
-        ruta = rutaRepository.save(ruta);
-        return modelMapper.map(ruta, RutaDTO.class);
+        // Crear una nueva instancia de Ruta
+        Ruta ruta = new Ruta();
+        ruta.setNombre(rutaDTO.getNombre());
+        ruta.setHoraInicio(rutaDTO.getHoraInicio());
+        ruta.setHoraFin(rutaDTO.getHoraFin());
+        ruta.setDias(rutaDTO.getDias());
+
+        // Convertir los IDs de las estaciones a entidades
+        List<Estacion> estaciones = rutaDTO.getEstacionesIds().stream()
+                .map(estacionId -> estacionRepository.findById(estacionId)
+                        .orElseThrow(() -> new RuntimeException("Estación no encontrada: " + estacionId)))
+                .collect(Collectors.toList());
+
+        ruta.setEstaciones(estaciones);  // Asignar las estaciones a la ruta
+
+        // Guardar la ruta con las estaciones asociadas
+        Ruta rutaGuardada = rutaRepository.save(ruta);
+
+        // Retornar el DTO mapeado
+        return modelMapper.map(rutaGuardada, RutaDTO.class);
     }
+
 
     // Actualizar una ruta existente
     public RutaDTO actualizarRuta(Long id, RutaDTO rutaDTO) {
         Ruta rutaExistente = rutaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ruta no encontrada"));
-        modelMapper.map(rutaDTO, rutaExistente); // Actualiza las propiedades
+
+        // Actualizar todas las propiedades
+        rutaExistente.setNombre(rutaDTO.getNombre());
+        rutaExistente.setHoraInicio(rutaDTO.getHoraInicio());
+        rutaExistente.setHoraFin(rutaDTO.getHoraFin());
+        rutaExistente.setDias(rutaDTO.getDias());
+
+        // Convertir los IDs a entidades Estacion
+        List<Estacion> estaciones = rutaDTO.getEstacionesIds().stream()
+                .map(estacionId -> estacionRepository.findById(estacionId)
+                        .orElseThrow(() -> new RuntimeException("Estación no encontrada: " + estacionId)))
+                .collect(Collectors.toList());
+
+        rutaExistente.setEstaciones(estaciones);
+
+        // Guardar la ruta actualizada
         rutaExistente = rutaRepository.save(rutaExistente);
+
         return modelMapper.map(rutaExistente, RutaDTO.class);
     }
 
@@ -63,7 +100,6 @@ public class RutaService {
         Ruta ruta = rutaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ruta no encontrada"));
 
-        // Convertir estaciones a una lista de IDs
         List<Long> estacionesIds = ruta.getEstaciones().stream()
                 .map(Estacion::getId)
                 .collect(Collectors.toList());
@@ -77,5 +113,4 @@ public class RutaService {
                 ruta.getDias()
         );
     }
-
 }

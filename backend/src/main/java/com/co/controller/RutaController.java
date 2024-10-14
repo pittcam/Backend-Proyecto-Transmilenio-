@@ -32,14 +32,20 @@ public class RutaController {
     // Crear una nueva ruta
     @PostMapping
     public RutaDTO crearRuta(@RequestBody RutaDTO rutaDTO) {
+        System.out.println("Creando ruta con datos: " + rutaDTO);
         return rutaService.crearRuta(rutaDTO);
     }
+
 
     // Actualizar una ruta existente
     @PutMapping("/{id}")
     public RutaDTO actualizarRuta(@PathVariable Long id, @RequestBody RutaDTO rutaDTO) {
+        System.out.println("Actualizando ruta con ID: " + id);
+        System.out.println("Datos recibidos: " + rutaDTO);
+
         return rutaService.actualizarRuta(id, rutaDTO);
     }
+
 
     // Buscar rutas por nombre
     @GetMapping("/search")
