@@ -48,16 +48,18 @@ public class DBInitializer implements CommandLineRunner {
         Ruta ruta1 = new Ruta();
         ruta1.setNombre("T40");
         ruta1.setHoraInicio("5:00");
-        ruta1.setHoraFin("22:30");
-        ruta1.setEstaciones(new HashSet<>(Set.of(estacion1, estacion2))); // Asignar estaciones a la ruta
+        ruta1.setHoraFin("22:00");
+        ruta1.setDias(new ArrayList<>(Set.of("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado")));
+        ruta1.setEstaciones(new ArrayList<>(Set.of(estacion1, estacion2))); // Asignar estaciones a la ruta
         rutaRepository.save(ruta1);
 
         Ruta ruta2 = new Ruta();
         ruta2.setNombre("B18");
         ruta2.setHoraInicio("5:00");
         ruta2.setHoraFin("22:30");
-        ruta2.setEstaciones(new HashSet<>(Set.of(estacion1, estacion2))); // Asignar estaciones a la ruta
-        rutaRepository.save(ruta1);
+        ruta2.setDias(new ArrayList<>(Set.of("Lunes", "Jueves", "Sábado")));
+        ruta2.setEstaciones(new ArrayList<>(Set.of(estacion1, estacion2))); // Asignar estaciones a la ruta
+        rutaRepository.save(ruta2);
 
 
         // Inicializar Buses (sin asignación de rutas)
@@ -68,7 +70,7 @@ public class DBInitializer implements CommandLineRunner {
 
         BusRutaDia rutaBus1 = new BusRutaDia();
         rutaBus1.setRuta(ruta1);
-        rutaBus1.setDias(new ArrayList<>(Set.of('L', 'M')));
+        rutaBus1.setDias(new ArrayList<>(Set.of("Lunes", "Martes")));
         rutaBus1.setBus(bus1);
 
         Bus bus2 = new Bus();
@@ -78,7 +80,7 @@ public class DBInitializer implements CommandLineRunner {
 
         BusRutaDia rutaBus2 = new BusRutaDia();
         rutaBus2.setRuta(ruta1);
-        rutaBus2.setDias(new ArrayList<>(Set.of('M', 'J','S')));
+        rutaBus2.setDias(new ArrayList<>(Set.of("Miércoles", "Jueves","Sábado")));
         rutaBus2.setBus(bus2);
 
         Bus bus3 = new Bus();
@@ -107,11 +109,11 @@ public class DBInitializer implements CommandLineRunner {
         conductorRepository.save(conductor2);
 
         Conductor conductor3 = new Conductor();
-        conductor2.setNombre("Camila Neiza");
-        conductor2.setCedula("1019982134");
-        conductor2.setTelefono("3133992341");
-        conductor2.setDireccion("Calle 7 # 24-32");
-        conductorRepository.save(conductor2);
+        conductor3.setNombre("Camila Neiza");
+        conductor3.setCedula("1019982134");
+        conductor3.setTelefono("3133992341");
+        conductor3.setDireccion("Calle 7 # 24-32");
+        conductorRepository.save(conductor3);
 
         // Opcional: Crear asignaciones
         Asignacion asignacion1 = new Asignacion();

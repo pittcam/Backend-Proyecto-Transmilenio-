@@ -14,5 +14,5 @@ public class BusRutaDiaDTO {
     private Long id;
     private BusDTO bus;
     private RutaDTO ruta;
-    private List<Character> dias;
+    private List<String> dias;
 }

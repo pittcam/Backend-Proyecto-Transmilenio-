@@ -29,5 +29,5 @@ public class BusRutaDia {
     @ElementCollection
     @CollectionTable(name = "bus_ruta_dias", joinColumns = @JoinColumn(name = "bus_ruta_dia_id"))
     @Column(name = "dia")  // Aquí se almacenarán los días como caracteres
-    private List<Character> dias;
+    private List<String> dias;
 }

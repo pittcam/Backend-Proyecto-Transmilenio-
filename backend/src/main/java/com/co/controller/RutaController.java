@@ -48,6 +48,7 @@ public class RutaController {
         return new ResponseEntity<>(rutas, HttpStatus.OK);
     }
 
+
     // Eliminar una ruta
     @DeleteMapping("/{id}")
     public void eliminarRuta(@PathVariable Long id) {

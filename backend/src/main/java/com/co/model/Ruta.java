@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,7 +31,8 @@ public class Ruta {
             joinColumns = @JoinColumn(name = "ruta_id"),
             inverseJoinColumns = @JoinColumn(name = "estacion_id")
     )
-    private Set<Estacion> estaciones = new HashSet<>();
+    private List<Estacion> estaciones = new ArrayList<>();
+
 
     @Column(name = "hora_inicio", nullable = false)
     private String horaInicio;
@@ -40,5 +43,5 @@ public class Ruta {
     @ElementCollection
     @CollectionTable(name = "ruta_dias", joinColumns = @JoinColumn(name = "ruta_id"))
     @Column(name = "dia")
-    private List<Character> dias;
+    private List<String> dias;
 }

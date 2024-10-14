@@ -2,6 +2,7 @@ package com.co.service;
 
 import com.co.dto.RutaDTO;
 import com.co.model.Ruta;
+import com.co.model.Estacion;
 import com.co.repository.RutaRepository;
 import com.co.repository.EstacionRepository;
 import org.modelmapper.ModelMapper;
@@ -61,6 +62,20 @@ public class RutaService {
     public RutaDTO obtenerRuta(Long id) {
         Ruta ruta = rutaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ruta no encontrada"));
-        return modelMapper.map(ruta, RutaDTO.class);
+
+        // Convertir estaciones a una lista de IDs
+        List<Long> estacionesIds = ruta.getEstaciones().stream()
+                .map(Estacion::getId)
+                .collect(Collectors.toList());
+
+        return new RutaDTO(
+                ruta.getId(),
+                ruta.getNombre(),
+                estacionesIds,
+                ruta.getHoraInicio(),
+                ruta.getHoraFin(),
+                ruta.getDias()
+        );
     }
+
 }
