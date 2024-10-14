@@ -99,25 +99,46 @@ public class AsignacionService {
         return true;
     }
 
-    public Asignacion agregarBusRutaDia(Long asignacionId, BusRutaDiaDTO busRutaDiaDTO) {
+    // Método para agregar un BusRutaDia a una asignación
+    public AsignacionDTO agregarBusRutaDia(Long asignacionId, BusRutaDiaDTO busRutaDiaDTO) {
+        // Buscar la asignación por ID
         Asignacion asignacion = asignacionRepository.findById(asignacionId)
                 .orElseThrow(() -> new RuntimeException("Asignación no encontrada"));
 
+        // Mapear el DTO recibido a la entidad BusRutaDia
         BusRutaDia busRutaDia = modelMapper.map(busRutaDiaDTO, BusRutaDia.class);
+
+        // Añadir el nuevo BusRutaDia a la lista de busRutaDias de la asignación
         asignacion.getBusRutaDias().add(busRutaDia);
 
-        return asignacionRepository.save(asignacion);
+        // Guardar la asignación actualizada en la base de datos
+        Asignacion asignacionActualizada = asignacionRepository.save(asignacion);
+
+        // Convertir la asignación actualizada a AsignacionDTO
+        AsignacionDTO asignacionDTO = modelMapper.map(asignacionActualizada, AsignacionDTO.class);
+
+        return asignacionDTO;  // Devolver el DTO resultante
     }
 
-    public Optional<Asignacion> obtenerAsignacionPorConductor(Long conductorId) {
+    // Obtener una asignación por el ID del conductor
+    public Optional<AsignacionDTO> obtenerAsignacionPorConductor(Long conductorId) {
         List<Asignacion> asignaciones = asignacionRepository.findByConductorId(conductorId);
-        return asignaciones.isEmpty() ? Optional.empty() : Optional.of(asignaciones.get(0));
+
+        if (asignaciones.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Asignacion asignacion = asignaciones.get(0);  // Solo devolvemos la primera asignación
+        // Convertir la asignación a AsignacionDTO usando ModelMapper
+        AsignacionDTO asignacionDTO = modelMapper.map(asignacion, AsignacionDTO.class);
+
+        return Optional.of(asignacionDTO);
     }
 
     // Obtener lista de BusRutaDiaDTO disponibles para la asignación
     public List<BusRutaDiaDTO> obtenerBusesRutaDiaDisponibles() {
         // Implementa la lógica para obtener las rutas disponibles y convertirlas a BusRutaDiaDTO
-        List<BusRutaDia> busesRutaDia = asignacionRepository.findBusesWithoutConductor(); // Obtén los datos del repositorio
+        List<BusRutaDia> busesRutaDia = busRutaDiaRepository.findAll(); // Obtén los datos del repositorio
         return busesRutaDia.stream()
                 .map(busRutaDia -> modelMapper.map(busRutaDia, BusRutaDiaDTO.class)) // Mapea a DTO
                 .collect(Collectors.toList());

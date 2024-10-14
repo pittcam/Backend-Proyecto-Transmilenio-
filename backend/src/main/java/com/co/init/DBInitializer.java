@@ -29,6 +29,9 @@ public class DBInitializer implements CommandLineRunner {
     private AsignacionRepository asignacionRepository;
 
     @Autowired
+    private BusRutaDiaRepository busRutaDiaRepository;
+
+    @Autowired
     private EstacionRepository estacionRepository; // Si es necesario
 
     @Override
@@ -107,6 +110,7 @@ public class DBInitializer implements CommandLineRunner {
         rutaBus3.setRuta(ruta3);
         rutaBus3.setDias(new ArrayList<>(Set.of("Miércoles", "Jueves","Sábado")));
         rutaBus3.setBus(bus3);
+        busRutaDiaRepository.save(rutaBus3);
 
         Bus bus4 = new Bus();
         bus4.setPlaca("AKR552");
@@ -118,6 +122,7 @@ public class DBInitializer implements CommandLineRunner {
         rutaBus4.setRuta(ruta2);
         rutaBus4.setDias(new ArrayList<>(Set.of("Lunes", "Martes","Viernes")));
         rutaBus4.setBus(bus4);
+        busRutaDiaRepository.save(rutaBus4);
 
         // Inicializar Conductores
         Conductor conductor1 = new Conductor();

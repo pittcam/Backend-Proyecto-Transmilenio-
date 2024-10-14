@@ -27,12 +27,4 @@ public class BusRutaDiaController {
         return new ResponseEntity<>(busesRutaDia, HttpStatus.OK);
     }
 
-    @PostMapping("/agregar")
-    public ResponseEntity<Asignacion> agregarBusRutaDia(
-            @RequestParam Long asignacionId,
-            @RequestBody BusRutaDiaDTO busRutaDiaDTO) {
-        Asignacion asignacionActualizada =
-                asignacionService.agregarBusRutaDia(asignacionId, busRutaDiaDTO);
-        return ResponseEntity.ok(asignacionActualizada);
-    }
 }

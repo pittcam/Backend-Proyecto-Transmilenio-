@@ -2,6 +2,7 @@ package com.co.controller;
 
 import com.co.dto.AsignacionDTO;
 import com.co.dto.BusDTO;
+import com.co.dto.BusRutaDiaDTO;
 import com.co.dto.RutaDTO;
 import com.co.model.Asignacion;
 import com.co.model.Bus;
@@ -88,12 +89,33 @@ public class AsignacionController {
         return rutaService.listarRutas();
     }
 
+    // Obtener la asignación por el ID del conductor
     @GetMapping("/conductor/{conductorId}")
-    public ResponseEntity<Asignacion> obtenerAsignacionPorConductor(@PathVariable Long conductorId) {
-        List<Asignacion> asignaciones = asignacionRepository.findByConductorId(conductorId);
-        if (asignaciones.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<AsignacionDTO> obtenerAsignacionPorConductor(@PathVariable Long conductorId) {
+        Optional<AsignacionDTO> asignacionDTO = asignacionService.obtenerAsignacionPorConductor(conductorId);
+
+        if (asignacionDTO.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);  // No hay asignación
         }
-        return ResponseEntity.ok(asignaciones.get(0)); // Se asume una única asignación activa por conductor
+
+        return ResponseEntity.ok(asignacionDTO.get());
     }
+
+    // El método que usaremos para agregar un BusRutaDia a una asignación
+    @PostMapping("/agregar/{asignacionId}")
+    public ResponseEntity<AsignacionDTO> agregarBusRutaDia(
+            @PathVariable Long asignacionId,
+            @RequestBody BusRutaDiaDTO busRutaDiaDTO) {
+        try {
+            // Aquí delegamos toda la lógica al servicio
+            AsignacionDTO asignacionDTO = asignacionService.agregarBusRutaDia(asignacionId, busRutaDiaDTO);
+
+            return ResponseEntity.ok(asignacionDTO);  // Devolvemos el DTO resultante
+        } catch (Exception e) {
+            // Manejar los errores y devolver un código de error apropiado
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+
 }
