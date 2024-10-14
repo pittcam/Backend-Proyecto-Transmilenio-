@@ -7,7 +7,6 @@ import com.co.model.Asignacion;
 import com.co.model.Bus;
 import com.co.service.AsignacionService;
 import com.co.service.BusService;
-import com.co.service.HorarioService;
 import com.co.service.RutaService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +29,6 @@ public class AsignacionController {
     private BusService busService;
 
     @Autowired
-    private HorarioService horarioService;
-
-    @Autowired
     private RutaService rutaService;
 
     // Listar todas las asignaciones
@@ -44,8 +40,7 @@ public class AsignacionController {
     // Obtener una asignación por ID
     @GetMapping("/{id}")
     public Asignacion obtenerAsignacion(@PathVariable Long id) {
-        Optional<Asignacion> asignacionOpt = asignacionService.obtenerPorId(id);
-        return asignacionOpt.orElse(null); // Devuelve la asignación o null si no existe
+        return asignacionService.obtenerPorId(id).orElse(null); // Devuelve la asignación o null si no existe
     }
 
     // Crear una nueva asignación
@@ -57,16 +52,13 @@ public class AsignacionController {
     // Endpoint para obtener los buses asignados a un conductor
     @GetMapping("/conductor/{conductorId}/buses")
     public ResponseEntity<List<BusDTO>> obtenerBusesPorConductor(@PathVariable Long conductorId) {
-        List<Bus> busesAsignados = asignacionService.obtenerBusesPorConductorId(conductorId);
-        if (busesAsignados.isEmpty()) {
+        List<BusDTO> busesDTO = asignacionService.obtenerBusesPorConductorId(conductorId);
+        if (busesDTO.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
-            List<BusDTO> busesDTO = busesAsignados.stream()
-                    .map(bus -> new BusDTO(bus.getId(), bus.getNumeroPlaca(), bus.getModelo()))
-                    .collect(Collectors.toList());
             return new ResponseEntity<>(busesDTO, HttpStatus.OK);
         }
-}
+    }
 
     // Asignar ruta a un bus
     @PostMapping("/asignar")
@@ -74,39 +66,19 @@ public class AsignacionController {
         return asignacionService.asignarRutaABus(busId, rutaId);
     }
 
-    // Actualizar una asignación existente
-    /*@PutMapping("/{id}")
-    public Asignacion actualizarAsignacion(@PathVariable Long id, @Valid @RequestBody AsignacionDTO asignacionDTO) {
-        Optional<Asignacion> asignacionOpt = asignacionService.obtenerPorId(id);
-        if (asignacionOpt.isPresent()) {
-            // Aquí se puede crear un método para actualizar la asignación existente
-            Asignacion asignacionExistente = asignacionOpt.get();
-            asignacionExistente.setBus(busService.getBusById(asignacionDTO.getBusId()));
-            asignacionExistente.setConductor(conductorService.getConductorById(asignacionDTO.getConductorId()));
-            asignacionExistente.setRuta(rutaService.getRutaById(asignacionDTO.getRutaId()));
-            return asignacionService.guardar(asignacionDTO);
-        } else {
-            return null; // Manejar el caso donde la asignación no exista
-        }
-    }*/
-
     // Eliminar una asignación
     @DeleteMapping("/{id}")
     public void eliminarAsignacion(@PathVariable Long id) {
         asignacionService.eliminar(id);
     }
 
-    // Obtener listas de buses, horarios y rutas (para usar en el frontend)
+    // Obtener listas de buses
     @GetMapping("/buses")
-    public List<Bus> listarBuses() {
+    public List<BusDTO> listarBuses() {
         return busService.getAllBuses();
     }
 
-    @GetMapping("/horarios")
-    public List<HorarioDTO> listarHorarios() {
-        return horarioService.obtenerHorarios();
-    }
-
+    // Obtener listas de rutas
     @GetMapping("/rutas")
     public List<RutaDTO> listarRutas() {
         return rutaService.listarRutas();

@@ -1,16 +1,17 @@
 package com.co.service;
 
-import com.co.conversion.BusDTOConverter;
 import com.co.dto.BusDTO;
 import com.co.dto.ConductorDTO;
 import com.co.model.Bus;
 import com.co.model.Conductor;
 import com.co.repository.BusRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BusService {
@@ -19,49 +20,49 @@ public class BusService {
     private BusRepository busRepository;
 
     @Autowired
-    private BusDTOConverter busDTOConverter;
+    private ModelMapper modelMapper;
 
     // Obtener todos los buses
-    public List<Bus> getAllBuses() {
-        return busRepository.findAll();
+    public List<BusDTO> getAllBuses() {
+        return busRepository.findAll().stream()
+                .map(bus -> modelMapper.map(bus, BusDTO.class))
+                .collect(Collectors.toList());
     }
 
-    public List<Bus> getBusesDisponibles() {
-        List<Bus> disponibles = busRepository.findBusesDisponibles();
-        System.out.println("Buses disponibles: " + disponibles);  // Añade este log
-        return disponibles;
+    // Obtener buses disponibles
+    public List<BusDTO> getBusesDisponibles() {
+        return busRepository.findBusesDisponibles().stream()
+                .map(bus -> modelMapper.map(bus, BusDTO.class))
+                .collect(Collectors.toList());
     }
 
     // Obtener un bus por ID
     public BusDTO getBus(Long id) {
-        return busDTOConverter.entityToDTO(busRepository.findById(id).orElseThrow());
+        Bus bus = busRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Bus no encontrado"));
+        return modelMapper.map(bus, BusDTO.class);
     }
 
+    // Crear un nuevo bus
+    public BusDTO createBus(BusDTO busDTO) {
+        Bus bus = modelMapper.map(busDTO, Bus.class);
+        bus = busRepository.save(bus);
+        return modelMapper.map(bus, BusDTO.class);
+    }
 
-
-    // Crear o actualizar un bus
+    // Guardar (crear o actualizar) un bus
     public BusDTO save(BusDTO busDTO) {
-        Bus bus = busDTOConverter.DTOToEntity(busDTO);
-        return busDTOConverter.entityToDTO(busRepository.save(bus));
+        Bus bus = modelMapper.map(busDTO, Bus.class);
+        bus = busRepository.save(bus);
+        return modelMapper.map(bus, BusDTO.class);
     }
 
-    // Eliminar un bus por ID
+    // Eliminar un bus
     public void delete(Long id) {
         if (!busRepository.existsById(id)) {
             throw new RuntimeException("Bus no encontrado para eliminar");
         }
         busRepository.deleteById(id);
-    }
-
-
-
-    public BusDTO createBus(BusDTO busDTO) {
-        Bus bus = busDTOConverter.DTOToEntity(busDTO);
-        return busDTOConverter.entityToDTO(busRepository.save(bus));
-    }
-
-    public List<Bus> findByIds(List<Long> ids) {
-        return busRepository.findAllById(ids);
     }
 }
 

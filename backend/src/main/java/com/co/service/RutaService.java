@@ -1,10 +1,10 @@
 package com.co.service;
 
-import com.co.conversion.RutaDTOConverter;
 import com.co.dto.RutaDTO;
 import com.co.model.Ruta;
 import com.co.repository.RutaRepository;
 import com.co.repository.EstacionRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,78 +19,48 @@ public class RutaService {
     private RutaRepository rutaRepository;
 
     @Autowired
-    private EstacionRepository estacionRepository;
+    private ModelMapper modelMapper;
 
-    @Autowired
-    private RutaDTOConverter rutaDTOConverter;
-
+    // Crear una nueva ruta
     public RutaDTO crearRuta(RutaDTO rutaDTO) {
-        // Obtener las estaciones a partir de los IDs
-        Set<Estacion> estaciones = estacionRepository.findAllById(rutaDTO.getEstacionesIds())
-                .stream()
-                .collect(Collectors.toSet());
-
-        // Crear la nueva ruta
-        Ruta nuevaRuta = rutaDTOConverter.dtoToEntity(rutaDTO, estaciones);
-
-        // Agregar los IDs de horarios a la nueva ruta
-        nuevaRuta.setHorarioFuncionamiento(rutaDTO.getHorarioFuncionamiento());
-
-        // Guardar la nueva ruta en la base de datos
-        rutaRepository.save(nuevaRuta);
-
-        return rutaDTOConverter.entityToDTO(nuevaRuta);
+        Ruta ruta = modelMapper.map(rutaDTO, Ruta.class);
+        ruta = rutaRepository.save(ruta);
+        return modelMapper.map(ruta, RutaDTO.class);
     }
 
-
+    // Actualizar una ruta existente
     public RutaDTO actualizarRuta(Long id, RutaDTO rutaDTO) {
         Ruta rutaExistente = rutaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ruta no encontrada"));
-
-        Set<Estacion> estaciones = estacionRepository.findAllById(rutaDTO.getEstacionesIds())
-                .stream()
-                .collect(Collectors.toSet());
-
-        rutaExistente.setNombre(rutaDTO.getNombre());
-        rutaExistente.setEstaciones(estaciones);
-        rutaExistente.setHorarioFuncionamiento(rutaDTO.getHorarioFuncionamiento());
-
-        rutaRepository.save(rutaExistente);
-        return rutaDTOConverter.entityToDTO(rutaExistente);
+        modelMapper.map(rutaDTO, rutaExistente); // Actualiza las propiedades
+        rutaExistente = rutaRepository.save(rutaExistente);
+        return modelMapper.map(rutaExistente, RutaDTO.class);
     }
 
-    public void eliminarRuta(Long id) {
-        Ruta ruta = rutaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Ruta no encontrada"));
-
-        if (!ruta.getAsignaciones().isEmpty()) {
-            throw new RuntimeException("No se puede eliminar la ruta porque tiene buses asignados");
-        }
-        rutaRepository.deleteById(id);
-    }
-
-    public RutaDTO obtenerRuta(Long id) {
-        Ruta ruta = rutaRepository.findById(id).orElse(null);
-        if (ruta != null) {
-            // Aquí puedes cargar otros detalles si es necesario
-            return new RutaDTO(ruta.getId(), ruta.getNombre(),
-                    // Convierte las estaciones a IDs
-                    ruta.getEstaciones().stream().map(Estacion::getId).collect(Collectors.toSet()),
-                    ruta.getHorarioFuncionamiento());
-        }
-        return null; // O lanza una excepción
-    }
-
-
+    // Listar todas las rutas
     public List<RutaDTO> listarRutas() {
         return rutaRepository.findAll().stream()
-                .map(rutaDTOConverter::entityToDTO)
+                .map(ruta -> modelMapper.map(ruta, RutaDTO.class))
                 .collect(Collectors.toList());
     }
 
-    // Buscar ruta por nombre
+    // Buscar rutas por nombre
     public List<RutaDTO> buscarRutasPorNombre(String nombre) {
         List<Ruta> rutas = rutaRepository.findAllByNombreContainingIgnoreCase(nombre);
-        return rutaDTOConverter.entitiesToDTOs(rutas);
+        return rutas.stream()
+                .map(ruta -> modelMapper.map(ruta, RutaDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    // Eliminar una ruta
+    public void eliminarRuta(Long id) {
+        rutaRepository.deleteById(id);
+    }
+
+    // Obtener una ruta por ID
+    public RutaDTO obtenerRuta(Long id) {
+        Ruta ruta = rutaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ruta no encontrada"));
+        return modelMapper.map(ruta, RutaDTO.class);
     }
 }

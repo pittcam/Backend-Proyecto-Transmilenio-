@@ -1,8 +1,9 @@
 package com.co.service;
 
 import com.co.dto.EstacionDTO;
-import com.co.conversion.EstacionDTOConverter;
+import com.co.model.Estacion;
 import com.co.repository.EstacionRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +17,13 @@ public class EstacionService {
     private EstacionRepository estacionRepository;
 
     @Autowired
-    private EstacionDTOConverter estacionDTOConverter;
+    private ModelMapper modelMapper;  // Usar ModelMapper en lugar del DTOConverter
 
+    // Obtener todas las estaciones
     public List<EstacionDTO> obtenerEstaciones() {
         List<Estacion> estaciones = estacionRepository.findAll();
         return estaciones.stream()
-                .map(estacionDTOConverter::entityToDTO)
+                .map(estacion -> modelMapper.map(estacion, EstacionDTO.class))
                 .collect(Collectors.toList());
     }
 }

@@ -20,17 +20,16 @@ public class ConductorController {
 
     // http://localhost:8080/conductor
     @GetMapping
-    public List<Conductor> recuperarConductores()throws InterruptedException {
-        Thread.sleep(2000);
-        List<Conductor> conductors = conductorService.getAllConductores();
-        return conductors;
+    public List<ConductorDTO> recuperarConductores() throws InterruptedException {
+        // Devolver una lista de ConductorDTO en lugar de Conductor
+        List<ConductorDTO> conductores = conductorService.getAllConductores();
+        return conductores;
     }
 
     // Nuevo endpoint para buscar conductores por nombre
     @GetMapping("/search")
     public ResponseEntity<List<ConductorDTO>> buscarConductoresPorNombre(@RequestParam String nombre) {
-        List<ConductorDTO> conductores = conductorService
-                .buscarConductoresPorNombre(nombre);
+        List<ConductorDTO> conductores = conductorService.buscarConductoresPorNombre(nombre);
         return new ResponseEntity<>(conductores, HttpStatus.OK);
     }
 

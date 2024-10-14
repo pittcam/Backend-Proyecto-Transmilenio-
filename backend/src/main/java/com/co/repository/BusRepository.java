@@ -19,7 +19,7 @@ public interface BusRepository extends JpaRepository<Bus, Long> {
     @Query("SELECT c FROM Conductor c WHERE LOWER(c.nombre) LIKE LOWER(concat(:texto, '%'))")
     List<Conductor> findAllByNombreStartingWithIgnoreCase2(String texto);
 
-    // Consulta para encontrar los buses que no están asignados
-    @Query("SELECT b FROM Bus b WHERE b.asignaciones IS EMPTY")
+    // Consulta personalizada para encontrar buses sin asignaciones
+    @Query("SELECT b FROM Bus b WHERE b NOT IN (SELECT a.bus FROM BusRutaDia a)")
     List<Bus> findBusesDisponibles();
 }

@@ -1,6 +1,5 @@
 package com.co.controller;
 
-import com.co.conversion.BusDTOConverter;
 import com.co.dto.BusDTO;
 import com.co.dto.ConductorDTO;
 import com.co.model.Bus;
@@ -21,27 +20,23 @@ public class BusController {
     @Autowired
     private BusService busService;
 
-    @Autowired
-    private BusDTOConverter busDTOConverter;
-
     // Obtener todos los buses
     @GetMapping
-    public List<Bus> recuperarBuses() throws InterruptedException {
-        Thread.sleep(2000);
-        List<Bus> buses = busService.getAllBuses();
-        return buses;
+    public List<BusDTO> recuperarBuses() throws InterruptedException {
+        Thread.sleep(2000); // Simulación de retraso
+        return busService.getAllBuses();
     }
 
+    // Obtener buses disponibles
     @GetMapping("/disponibles")
-    public List<Bus> recuperarBusesDisponibles() {
+    public List<BusDTO> recuperarBusesDisponibles() {
         return busService.getBusesDisponibles();
     }
 
     // Obtener un bus por ID
     @GetMapping("/{id}")
     public BusDTO recuperarBus(@PathVariable Long id) {
-        BusDTO busDTO = busService.getBus(id); // Cambia esto para que use BusDTO
-        return busDTO;
+        return busService.getBus(id);
     }
 
     // Crear un nuevo bus
@@ -53,8 +48,8 @@ public class BusController {
     // Actualizar un bus
     @PutMapping("/{id}")
     public ResponseEntity<BusDTO> actualizarBus(@PathVariable Long id, @RequestBody BusDTO busDTO) {
-        busDTO.setId(id);  // Suponiendo que el DTO tiene un método setId
-        BusDTO actualizadoBusDTO = busService.save(busDTO); // Cambia esto para que use BusDTO
+        busDTO.setId(id);  // Establece el ID del bus
+        BusDTO actualizadoBusDTO = busService.save(busDTO); // Usa el DTO para guardar
         return ResponseEntity.ok(actualizadoBusDTO);
     }
 
