@@ -20,7 +20,7 @@ public class Bus {
     private Long id;
 
     @Column(name = "numero_placa", unique = true, nullable = false)
-    private String Placa;
+    private String placa;
 
     @Column(name = "modelo", nullable = false)
     private String modelo;

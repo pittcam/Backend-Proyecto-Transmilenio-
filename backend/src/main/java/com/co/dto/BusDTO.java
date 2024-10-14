@@ -10,7 +10,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class BusDTO {
     private Long id;
-    private String numeroPlaca;
+    private String placa;
     private String modelo;
     private Set<RutaDTO> rutas;
 }

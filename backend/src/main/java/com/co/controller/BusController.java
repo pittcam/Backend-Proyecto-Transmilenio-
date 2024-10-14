@@ -23,7 +23,6 @@ public class BusController {
     // Obtener todos los buses
     @GetMapping
     public List<BusDTO> recuperarBuses() throws InterruptedException {
-        Thread.sleep(2000); // Simulación de retraso
         return busService.getAllBuses();
     }
 
