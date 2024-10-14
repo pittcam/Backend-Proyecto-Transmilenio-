@@ -43,6 +43,10 @@ public class DBInitializer implements CommandLineRunner {
         estacion2.setNombre("Calle 34");
         estacionRepository.save(estacion2);
 
+        Estacion estacion3 = new Estacion();
+        estacion3.setNombre("Portal Usme");
+        estacionRepository.save(estacion3);
+
 
         // Inicializar Rutas
         Ruta ruta1 = new Ruta();
@@ -61,11 +65,20 @@ public class DBInitializer implements CommandLineRunner {
         ruta2.setEstaciones(new ArrayList<>(Set.of(estacion1, estacion2))); // Asignar estaciones a la ruta
         rutaRepository.save(ruta2);
 
+        Ruta ruta3 = new Ruta();
+        ruta3.setNombre("K86");
+        ruta3.setHoraInicio("4:00");
+        ruta3.setHoraFin("19:30");
+        ruta3.setDias(new ArrayList<>(Set.of("Martes", "Miércoles", "Sábado")));
+        ruta3.setEstaciones(new ArrayList<>(Set.of(estacion1, estacion3))); // Asignar estaciones a la ruta
+        rutaRepository.save(ruta3);
+
 
         // Inicializar Buses (sin asignación de rutas)
         Bus bus1 = new Bus();
         bus1.setPlaca("JDK345");
         bus1.setModelo("Modelo Bus 1");
+        bus1.setRutas(new ArrayList<>(Set.of(ruta1, ruta2)));
         busRepository.save(bus1);
 
         BusRutaDia rutaBus1 = new BusRutaDia();
@@ -76,6 +89,7 @@ public class DBInitializer implements CommandLineRunner {
         Bus bus2 = new Bus();
         bus2.setPlaca("XYZ789");
         bus2.setModelo("Modelo Bus 2");
+        bus2.setRutas(new ArrayList<>(Set.of(ruta3)));
         busRepository.save(bus2);
 
         BusRutaDia rutaBus2 = new BusRutaDia();
@@ -86,11 +100,13 @@ public class DBInitializer implements CommandLineRunner {
         Bus bus3 = new Bus();
         bus3.setPlaca("ABC123");
         bus3.setModelo("Modelo Bus 3");
+        bus3.setRutas(new ArrayList<>(Set.of(ruta1, ruta3)));
         busRepository.save(bus3);
 
         Bus bus4 = new Bus();
         bus4.setPlaca("AKR552");
         bus4.setModelo("Modelo Bus 4");
+        bus4.setRutas(new ArrayList<>(Set.of(ruta1, ruta2, ruta3)));
         busRepository.save(bus4);
 
         // Inicializar Conductores

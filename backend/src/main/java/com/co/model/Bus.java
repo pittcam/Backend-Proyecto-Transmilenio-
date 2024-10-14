@@ -5,7 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -31,5 +34,5 @@ public class Bus {
             joinColumns = @JoinColumn(name = "bus_id"),
             inverseJoinColumns = @JoinColumn(name = "ruta_id")
     )
-    private Set<Ruta> rutas = new HashSet<>();
+    private List<Ruta> rutas = new ArrayList<>();
 }

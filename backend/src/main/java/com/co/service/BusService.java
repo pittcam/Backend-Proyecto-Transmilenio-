@@ -2,6 +2,7 @@ package com.co.service;
 
 import com.co.dto.BusDTO;
 import com.co.dto.ConductorDTO;
+import com.co.dto.RutaDTO;
 import com.co.model.Bus;
 import com.co.model.Conductor;
 import com.co.repository.BusRepository;
@@ -36,12 +37,21 @@ public class BusService {
                 .collect(Collectors.toList());
     }
 
-    // Obtener un bus por ID
+    // Obtener un bus por ID y mapear las rutas
     public BusDTO getBus(Long id) {
         Bus bus = busRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Bus no encontrado"));
-        return modelMapper.map(bus, BusDTO.class);
+
+        // Mapear el Bus y sus rutas
+        BusDTO busDTO = modelMapper.map(bus, BusDTO.class);
+        List<RutaDTO> rutasDTO = bus.getRutas().stream()
+                .map(ruta -> modelMapper.map(ruta, RutaDTO.class))
+                .collect(Collectors.toList());
+
+        busDTO.setRutas(rutasDTO);  // Asegúrate de que las rutas se añaden al DTO
+        return busDTO;
     }
+
 
     // Crear un nuevo bus
     public BusDTO createBus(BusDTO busDTO) {
