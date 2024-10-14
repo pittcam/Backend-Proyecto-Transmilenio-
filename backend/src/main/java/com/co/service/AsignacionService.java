@@ -5,10 +5,7 @@ import com.co.dto.BusDTO;
 import com.co.dto.BusRutaDiaDTO;
 import com.co.dto.RutaDTO;
 import com.co.model.*;
-import com.co.repository.AsignacionRepository;
-import com.co.repository.BusRepository;
-import com.co.repository.ConductorRepository;
-import com.co.repository.RutaRepository;
+import com.co.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +17,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 @Service
 public class AsignacionService {
+
+    @Autowired
+    private BusRutaDiaRepository busRutaDiaRepository;
 
     @Autowired
     private AsignacionRepository asignacionRepository;
@@ -97,6 +97,30 @@ public class AsignacionService {
             }
         }
         return true;
+    }
+
+    public Asignacion agregarBusRutaDia(Long asignacionId, BusRutaDiaDTO busRutaDiaDTO) {
+        Asignacion asignacion = asignacionRepository.findById(asignacionId)
+                .orElseThrow(() -> new RuntimeException("Asignación no encontrada"));
+
+        BusRutaDia busRutaDia = modelMapper.map(busRutaDiaDTO, BusRutaDia.class);
+        asignacion.getBusRutaDias().add(busRutaDia);
+
+        return asignacionRepository.save(asignacion);
+    }
+
+    public Optional<Asignacion> obtenerAsignacionPorConductor(Long conductorId) {
+        List<Asignacion> asignaciones = asignacionRepository.findByConductorId(conductorId);
+        return asignaciones.isEmpty() ? Optional.empty() : Optional.of(asignaciones.get(0));
+    }
+
+    // Obtener lista de BusRutaDiaDTO disponibles para la asignación
+    public List<BusRutaDiaDTO> obtenerBusesRutaDiaDisponibles() {
+        // Implementa la lógica para obtener las rutas disponibles y convertirlas a BusRutaDiaDTO
+        List<BusRutaDia> busesRutaDia = asignacionRepository.findBusesWithoutConductor(); // Obtén los datos del repositorio
+        return busesRutaDia.stream()
+                .map(busRutaDia -> modelMapper.map(busRutaDia, BusRutaDiaDTO.class)) // Mapea a DTO
+                .collect(Collectors.toList());
     }
 }
 

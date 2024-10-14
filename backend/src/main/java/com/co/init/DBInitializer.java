@@ -103,11 +103,21 @@ public class DBInitializer implements CommandLineRunner {
         bus3.setRutas(new ArrayList<>(Set.of(ruta1, ruta3)));
         busRepository.save(bus3);
 
+        BusRutaDia rutaBus3 = new BusRutaDia();
+        rutaBus3.setRuta(ruta3);
+        rutaBus3.setDias(new ArrayList<>(Set.of("Miércoles", "Jueves","Sábado")));
+        rutaBus3.setBus(bus3);
+
         Bus bus4 = new Bus();
         bus4.setPlaca("AKR552");
         bus4.setModelo("Modelo Bus 4");
         bus4.setRutas(new ArrayList<>(Set.of(ruta1, ruta2, ruta3)));
         busRepository.save(bus4);
+
+        BusRutaDia rutaBus4 = new BusRutaDia();
+        rutaBus4.setRuta(ruta2);
+        rutaBus4.setDias(new ArrayList<>(Set.of("Lunes", "Martes","Viernes")));
+        rutaBus4.setBus(bus4);
 
         // Inicializar Conductores
         Conductor conductor1 = new Conductor();
@@ -138,7 +148,7 @@ public class DBInitializer implements CommandLineRunner {
         asignacionRepository.save(asignacion1);
 
         Asignacion asignacion2 = new Asignacion();
-        asignacion1.setConductor(conductor1);
+        asignacion2.setConductor(conductor2);
         asignacion2.setBusRutaDias(new ArrayList<>(List.of(rutaBus2)));
         asignacionRepository.save(asignacion2);
     }

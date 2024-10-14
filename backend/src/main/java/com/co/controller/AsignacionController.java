@@ -5,6 +5,7 @@ import com.co.dto.BusDTO;
 import com.co.dto.RutaDTO;
 import com.co.model.Asignacion;
 import com.co.model.Bus;
+import com.co.repository.AsignacionRepository;
 import com.co.service.AsignacionService;
 import com.co.service.BusService;
 import com.co.service.RutaService;
@@ -24,6 +25,9 @@ public class AsignacionController {
 
     @Autowired
     private AsignacionService asignacionService;
+
+    @Autowired
+    private AsignacionRepository asignacionRepository;
 
     @Autowired
     private BusService busService;
@@ -82,5 +86,14 @@ public class AsignacionController {
     @GetMapping("/rutas")
     public List<RutaDTO> listarRutas() {
         return rutaService.listarRutas();
+    }
+
+    @GetMapping("/conductor/{conductorId}")
+    public ResponseEntity<Asignacion> obtenerAsignacionPorConductor(@PathVariable Long conductorId) {
+        List<Asignacion> asignaciones = asignacionRepository.findByConductorId(conductorId);
+        if (asignaciones.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return ResponseEntity.ok(asignaciones.get(0)); // Se asume una única asignación activa por conductor
     }
 }

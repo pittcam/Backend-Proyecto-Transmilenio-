@@ -25,4 +25,6 @@ public class Asignacion {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "asignacion_id")  // Foreign key para asignación
     private List<BusRutaDia> busRutaDias;
+
+
 }
