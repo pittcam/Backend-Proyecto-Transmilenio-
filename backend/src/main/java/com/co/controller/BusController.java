@@ -52,6 +52,19 @@ public class BusController {
         return ResponseEntity.ok(actualizadoBusDTO);
     }
 
+    // Asignar varias rutas a un bus
+    @PostMapping("/{busId}/asignarRutas")
+    public ResponseEntity<BusDTO> asignarRutas(
+            @PathVariable Long busId,
+            @RequestBody List<Long> rutaIds) {
+        try {
+            BusDTO updatedBus = busService.asignarRutas(busId, rutaIds);
+            return ResponseEntity.ok(updatedBus);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
     // Eliminar un bus
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarBus(@PathVariable Long id) {

@@ -5,7 +5,9 @@ import com.co.dto.ConductorDTO;
 import com.co.dto.RutaDTO;
 import com.co.model.Bus;
 import com.co.model.Conductor;
+import com.co.model.Ruta;
 import com.co.repository.BusRepository;
+import com.co.repository.RutaRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,9 @@ public class BusService {
 
     @Autowired
     private BusRepository busRepository;
+
+    @Autowired
+    private RutaRepository rutaRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -39,17 +44,44 @@ public class BusService {
 
     // Obtener un bus por ID y mapear las rutas
     public BusDTO getBus(Long id) {
-        Bus bus = busRepository.findById(id)
+        return busRepository.findById(id)
+                .map(bus -> {
+                    BusDTO busDTO = modelMapper.map(bus, BusDTO.class);
+                    List<RutaDTO> rutasDTO = bus.getRutas().stream()
+                            .map(ruta -> modelMapper.map(ruta, RutaDTO.class))
+                            .collect(Collectors.toList());
+                    busDTO.setRutas(rutasDTO);
+                    return busDTO;
+                })
+                .orElseThrow(() -> new RuntimeException("Bus no encontrado con ID: " + id));
+    }
+
+
+    // Asignar varias rutas a un bus
+    public BusDTO asignarRutas(Long busId, List<Long> rutaIds) {
+        // Buscar el bus por ID
+        Bus bus = busRepository.findById(busId)
                 .orElseThrow(() -> new RuntimeException("Bus no encontrado"));
 
-        // Mapear el Bus y sus rutas
-        BusDTO busDTO = modelMapper.map(bus, BusDTO.class);
-        List<RutaDTO> rutasDTO = bus.getRutas().stream()
-                .map(ruta -> modelMapper.map(ruta, RutaDTO.class))
-                .collect(Collectors.toList());
+        // Obtener las rutas actuales del bus
+        List<Ruta> rutasActuales = bus.getRutas();
 
-        busDTO.setRutas(rutasDTO);  // Asegúrate de que las rutas se añaden al DTO
-        return busDTO;
+        // Obtener las nuevas rutas por sus IDs
+        List<Ruta> nuevasRutas = rutaRepository.findAllById(rutaIds);
+
+        // Combinar las rutas actuales con las nuevas (sin duplicados)
+        for (Ruta nuevaRuta : nuevasRutas) {
+            if (!rutasActuales.contains(nuevaRuta)) {
+                rutasActuales.add(nuevaRuta); // Agregar solo si no está ya presente
+            }
+        }
+
+        // Guardar el bus con las rutas actualizadas
+        bus.setRutas(rutasActuales); // Actualizar las rutas del bus
+        bus = busRepository.save(bus); // Guardar el bus actualizado
+
+        // Retornar el bus actualizado
+        return modelMapper.map(bus, BusDTO.class);
     }
 
 
