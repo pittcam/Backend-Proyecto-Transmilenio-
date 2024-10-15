@@ -106,5 +106,12 @@ public class BusService {
         }
         busRepository.deleteById(id);
     }
+
+    public List<BusDTO> buscarBusesPorPlaca(String placa) {
+        List<Bus> buses = busRepository.findAllByPlacaContainingIgnoreCase(placa);
+        return buses.stream()
+                .map(ruta -> modelMapper.map(buses, BusDTO.class))
+                .collect(Collectors.toList());
+    }
 }
 

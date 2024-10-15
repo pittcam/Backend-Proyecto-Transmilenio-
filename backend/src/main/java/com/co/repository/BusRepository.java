@@ -22,4 +22,6 @@ public interface BusRepository extends JpaRepository<Bus, Long> {
     // Consulta personalizada para encontrar buses sin asignaciones
     @Query("SELECT b FROM Bus b WHERE b NOT IN (SELECT a.bus FROM BusRutaDia a)")
     List<Bus> findBusesDisponibles();
+
+    List<Bus> findAllByPlacaContainingIgnoreCase(String placa);
 }

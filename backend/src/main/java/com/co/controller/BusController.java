@@ -2,6 +2,7 @@ package com.co.controller;
 
 import com.co.dto.BusDTO;
 import com.co.dto.ConductorDTO;
+import com.co.dto.RutaDTO;
 import com.co.model.Bus;
 import com.co.model.Conductor;
 import com.co.service.BusService;
@@ -63,6 +64,13 @@ public class BusController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    // Buscar rutas por nombre
+    @GetMapping("/search")
+    public ResponseEntity<List<BusDTO>> buscarBusesPorPlaca(@RequestParam String placa) {
+        List<BusDTO> buses = busService.buscarBusesPorPlaca(placa);
+        return new ResponseEntity<>(buses, HttpStatus.OK);
     }
 
     // Eliminar un bus
