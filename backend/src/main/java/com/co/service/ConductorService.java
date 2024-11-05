@@ -43,9 +43,20 @@ public class ConductorService {
 
     // Guardar (crear o actualizar) un conductor
     public ConductorDTO saveConductor(ConductorDTO conductorDTO) {
-        Conductor conductor = modelMapper.map(conductorDTO, Conductor.class);
-        conductor = conductorRepository.save(conductor);
-        return modelMapper.map(conductor, ConductorDTO.class);
+        // Buscar el conductor existente en la base de datos
+        Conductor conductorExistente = conductorRepository.findById(conductorDTO.getId())
+                .orElseThrow(() -> new RuntimeException("Conductor no encontrado"));
+
+        // Mapear los atributos del DTO al objeto existente (excepto las asignaciones)
+        conductorExistente.setNombre(conductorDTO.getNombre());
+        conductorExistente.setCedula(conductorDTO.getCedula());
+        conductorExistente.setTelefono(conductorDTO.getTelefono());
+        conductorExistente.setDireccion(conductorDTO.getDireccion());
+
+        // Guardar el conductor actualizado sin perder las asignaciones existentes
+        Conductor conductorActualizado = conductorRepository.save(conductorExistente);
+
+        return modelMapper.map(conductorActualizado, ConductorDTO.class);
     }
 
     // Buscar conductores por nombre
