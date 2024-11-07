@@ -45,7 +45,7 @@ public class AuthenticationService {
     public JwtAuthenticationResponse login(LoginDTO request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getCorreo(), request.getContrasena()));
-        User user = userRepository.findByEmail(request.getCorreo())
+        User user = userRepository.findByCorreo(request.getCorreo())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
         String jwt = jwtService.generateToken(user);
         return new JwtAuthenticationResponse(jwt, user.getCorreo(), user.getRole());
