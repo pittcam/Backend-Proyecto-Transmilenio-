@@ -1,6 +1,7 @@
 package com.co;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.co.model.Estacion;
 import com.co.repository.EstacionRepository;
@@ -89,24 +90,73 @@ public class RutaControllerSystemTest {
     }
 
     @Test
-    void editarRutaCorrecto() {
-        // Navegar a la página de edición de la ruta
-        page.navigate(baseUrl + "/rutas/editar/1");
+    void eliminarRutaCorrecto() {
+        // Navegar a la página que muestra las rutas
+        page.navigate(baseUrl + "/rutas");
 
-        // Esperar a que el campo de entrada de nombre sea visible
-        page.locator("#nombre").waitFor();
+        // Esperar que la ruta "Ruta 1" esté visible antes de eliminar
+        page.locator("text=Ruta 1").waitFor();
 
-        // Editar el nombre de la ruta
-        page.locator("#nombre").fill("T40 Modificada");
+        // Localizar el botón "Eliminar" dentro del contenedor de "Ruta 1" y hacer clic en él
+        page.locator("text=Ruta 1").locator("..").locator(".btn-delete").click();
 
-        // Hacer clic en el botón de actualizar
-        page.locator(".btn-update").click();
+        // Esperar que la interfaz de usuario se actualice (esperamos que la ruta sea eliminada)
+        page.waitForTimeout(1000); // Espera de 1 segundo para que se actualice la UI
 
-        // Esperar a que aparezca un elemento específico de la nueva página
-        page.waitForSelector("#ruta1 .nombre");
-
-        String nombreRutaActualizado = page.locator("#ruta1 .nombre").textContent();
-        assertEquals("T40 Modificada", nombreRutaActualizado);
+        // Verificar que "Ruta 1" ya no esté en la lista
+        boolean isRuta1Visible = page.locator("text=Ruta 1").isVisible();
+        assertEquals(false, isRuta1Visible, "La ruta 'Ruta 1' debería haber sido eliminada.");
     }
+
+    @Test
+    void crearRutaCorrecto() {
+        // Navegar a la página de crear ruta
+        page.navigate(baseUrl + "/rutas/crear");
+
+        // Ingresar el nombre de la nueva ruta en el formulario
+        page.fill("input[name='nombre']", "Ruta Test");
+
+        // Hacer clic en el botón de crear ruta
+        page.click(".btn-create");
+
+        // Esperar un momento para que la ruta se cree y la UI se actualice
+        page.waitForTimeout(1000);
+
+        // Verificar que la nueva ruta se haya agregado a la lista
+        boolean isRutaTestVisible = page.locator("text=Ruta Test").isVisible();
+        assertTrue(isRutaTestVisible, "La ruta 'Ruta Test' debería haberse creado y mostrado en la pantalla.");
+    }
+
+
+    @Test
+    void editarRutaCorrecto() {
+        // Crear una ruta "Ruta 1" como en el test anterior
+
+        // Navegar a la página que lista las rutas
+        page.navigate(baseUrl + "/rutas");
+
+        // Esperar que la ruta "Ruta 1" esté visible
+        page.locator("text=Ruta 1").waitFor();
+
+        // Localizar el botón "Editar" dentro del contenedor de "Ruta 1" y hacer clic en él
+        page.locator("text=Ruta 1").locator("..").locator(".btn-edit").click();
+
+        // Esperar que el formulario de edición de la ruta esté visible
+        page.locator("input[name='nombre']").waitFor();
+
+        // Modificar el nombre de la ruta en el campo de texto
+        page.fill("input[name='nombre']", "Ruta Editada");
+
+        // Hacer clic en el botón "Actualizar Ruta"
+        page.click(".btn-update");
+
+        // Esperar que la interfaz de usuario se actualice
+        page.waitForTimeout(1000);
+
+        // Verificar que la nueva ruta se haya actualizado en la lista
+        boolean isRutaEditadaVisible = page.locator("text=Ruta Editada").isVisible();
+        assertTrue(isRutaEditadaVisible, "La ruta debería haberse actualizado a 'Ruta Editada' en la pantalla.");
+    }
+
 
 }
