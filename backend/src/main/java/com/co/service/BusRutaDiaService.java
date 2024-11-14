@@ -66,8 +66,4 @@ public class BusRutaDiaService {
 
 
 
-
-
-
-    // Métodos para manejar la lógica de negocio si es necesario
 }
