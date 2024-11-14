@@ -6,6 +6,7 @@ import com.co.service.RutaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +27,8 @@ public class RutaController {
     }
 
     // Obtener una ruta por ID
+
+
     @GetMapping("/{id}")
     public RutaDTO obtenerRuta(@PathVariable Long id) {
         return rutaService.obtenerRuta(id);
@@ -40,7 +43,6 @@ public class RutaController {
 
 
     // Actualizar una ruta existente
-    @PreAuthorize("hasAuthority('COORDINADOR')")
     @PutMapping("/{id}")
     public RutaDTO actualizarRuta(@PathVariable Long id, @RequestBody RutaDTO rutaDTO) {
         System.out.println("Actualizando ruta con ID: " + id);

@@ -55,6 +55,7 @@ public class AsignacionController {
     }
 
     // Endpoint para obtener los buses asignados a un conductor
+
     @GetMapping("/conductor/{conductorId}/buses")
     public ResponseEntity<List<BusDTO>> obtenerBusesPorConductor(@PathVariable Long conductorId) {
         List<BusDTO> busesDTO = asignacionService.obtenerBusesPorConductorId(conductorId);

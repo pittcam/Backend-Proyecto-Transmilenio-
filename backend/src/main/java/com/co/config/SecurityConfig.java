@@ -5,6 +5,7 @@ import com.co.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -44,9 +45,20 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/autenticacion/**").permitAll()  // Asegurarte que esta línea se aplica
-                        .requestMatchers("/rutas").hasAnyAuthority("ADMIN")
-                        .requestMatchers("/rutas/**").hasAnyAuthority("COORDINADOR")
+                        .requestMatchers("/autenticacion/**").permitAll() // Permitir acceso público para autenticación
+                        .requestMatchers("/rutas/search").hasAnyAuthority("USER", "COORDINADOR") // Acceso a `/rutas/search`
+                        .requestMatchers(HttpMethod.GET, "/rutas/{id}").hasAnyAuthority("USER", "COORDINADOR") // Acceso de GET `/rutas/{id}`
+                        .requestMatchers("/rutas/**").hasAnyAuthority("COORDINADOR") // Acceso completo a cualquier endpoint de `/rutas` para `COORDINADOR`
+                        .requestMatchers("/rutas").hasAnyAuthority("USER") // Acceso de `USER` a la raíz `/rutas`
+
+                        .requestMatchers("/conductor/**").hasAnyAuthority("ADMIN")
+                        .requestMatchers("/bus/**").hasAnyAuthority("ADMIN")
+                        .requestMatchers("/asignacion/**").hasAnyAuthority("ADMIN")
+                        .requestMatchers("/bus-ruta-dia/**").hasAnyAuthority("ADMIN")
+
+                        .requestMatchers("/estacion/**").hasAnyAuthority("ADMIN", "COORDINADOR","USER")
+
+
                         .anyRequest().authenticated())// Esto garantiza que el resto de rutas requieren autenticación
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) -> {
