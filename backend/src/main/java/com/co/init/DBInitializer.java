@@ -6,6 +6,7 @@ import com.co.model.*;
 import com.co.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -32,10 +33,57 @@ public class DBInitializer implements CommandLineRunner {
     private BusRutaDiaRepository busRutaDiaRepository;
 
     @Autowired
-    private EstacionRepository estacionRepository; // Si es necesario
+    private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private EstacionRepository estacionRepository;
 
     @Override
     public void run(String... args) throws Exception {
+
+        Rol rol1 = new Rol();
+        rol1.setTipoRol("ADMIN");
+        Rol rol2 = new Rol();
+        rol2.setTipoRol("USER");
+        Rol rol3 = new Rol();
+        rol3.setTipoRol("COORDINADOR");
+        roleRepository.save(rol1);
+        roleRepository.save(rol2);
+        roleRepository.save(rol3);
+
+
+        User user1 = new User();
+        user1.setNombre("camila");
+        user1.setCedula("12345678");
+        user1.setCorreo("cam@exam.co");
+        user1.setUsername("user");
+        user1.setContrasena(passwordEncoder.encode("userpass"));
+        user1.setRol(rol2);
+        userRepository.save(user1);
+
+        User user2 = new User();
+        user2.setNombre("Juan");
+        user2.setCedula("123455");
+        user2.setCorreo("juan@exam.co");
+        user2.setUsername("admin");
+        user2.setContrasena(passwordEncoder.encode("adminpass"));
+        user2.setRol(rol1);
+        userRepository.save(user2);
+
+        User user3 = new User();
+        user3.setNombre("Jerry");
+        user3.setCedula("123457");
+        user3.setCorreo("Jerry@gmail.com");
+        user3.setUsername("coordinador");
+        user3.setContrasena(passwordEncoder.encode("coordinadorpass"));
+        user3.setRol(rol3);
+        userRepository.save(user3);
 
         // Inicializar Estaciones
         Estacion estacion1 = new Estacion();
@@ -94,6 +142,7 @@ public class DBInitializer implements CommandLineRunner {
         bus2.setModelo("Modelo Bus 2");
         bus2.setRutas(new ArrayList<>(Set.of(ruta3)));
         busRepository.save(bus2);
+
 
         BusRutaDia rutaBus2 = new BusRutaDia();
         rutaBus2.setRuta(ruta1);

@@ -26,30 +26,30 @@ public class AuthenticationService {
     private AuthenticationManager authenticationManager;
 
     public LoginResponseDTO login(String username, String password) {
-        Optional<User> usuario = userRepository.findByNombre(username);
-
-        if (usuario == null) {
+        Optional<User> usuario = userRepository.findByUsername(username);
+        System.out.println("Usuario antes de null: " + usuario);
+        if (usuario.isEmpty()) {
             throw new UsernameNotFoundException("Usuario no encontrado");
         }
 
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
         String token = jwtService.generateToken(usuario.get());
-        return new LoginResponseDTO(token, username, usuario.get().getRol().getTipoRol());
+        return new LoginResponseDTO(username, token, usuario.get().getRol().getTipoRol());
     }
 
     public LoginResponseDTO refresh(String token) {
         token = token.substring(7);
         String username = jwtService.extractUserName(token);
-        Optional<User> usuario = userRepository.findByNombre(username);
+        Optional<User> usuario = userRepository.findByUsername(username);
 
-        if (usuario == null) {
+        if (usuario.isEmpty()) {
             throw new UsernameNotFoundException("Usuario no encontrado");
         }
 
         token = jwtService.generateToken(usuario.get());
 
-        return new LoginResponseDTO(token, username, usuario.get().getRol().getTipoRol());
+        return new LoginResponseDTO(username, token, usuario.get().getRol().getTipoRol());
     }
 
 }

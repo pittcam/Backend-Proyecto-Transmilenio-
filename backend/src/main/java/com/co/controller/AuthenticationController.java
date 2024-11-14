@@ -21,8 +21,6 @@ public class AuthenticationController {
     @Autowired
     private AuthenticationService autenticacionService;
 
-
-
     @Autowired
     private UserService userService;
 
@@ -32,8 +30,6 @@ public class AuthenticationController {
                 autenticacionService.login(body.getUsername(), body.getPassword())
         );
     }
-
-
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(@RequestHeader("Authorization") String token) {

@@ -22,8 +22,6 @@ public class JwtService {
 
     private static Duration tokeDuration = Duration.ofHours(10);
 
-
-
     @Value("${jwt.signing.key}")
     private String jwtPrivateKey;
 

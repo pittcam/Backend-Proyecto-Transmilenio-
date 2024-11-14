@@ -21,18 +21,23 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String nombre;
-    @Column(unique = true)
+
+    @Column(unique = true, nullable = false)
     private String correo;
+
+    @Column(nullable = false)
     private String contrasena;
+
+    @Column(unique = true, nullable = false)
+    private String username;
+
+    @ManyToOne
     @JoinColumn(name = "rol_id", nullable = false)
     private Rol rol;
     @Column(unique = true)
     private String cedula;
 
     public User() {
-    }
-
-    public User(String nombre, String cedula, String correo, Rol rol) {
     }
 
 
@@ -43,13 +48,12 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return "";
+        return contrasena;
     }
 
     @Override
     public String getUsername() {
-        // correo in our case
-        return correo;
+        return username;
     }
 
     @Override

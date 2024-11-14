@@ -37,16 +37,17 @@ public class SecurityConfig {
     private UserService userService;
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http, HandlerMappingIntrospector introspector)
-            throws Exception {
+    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.headers(headers -> headers.frameOptions(t -> t.disable()));
 
         return http
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-                        .anyRequest()
-                        .authenticated()) // Permitir acceso a cualquier ruta autenticada
+                        .requestMatchers("/autenticacion/**").permitAll()  // Asegurarte que esta línea se aplica
+                        .requestMatchers("/rutas").hasAnyAuthority("ADMIN")
+                        .requestMatchers("/rutas/**").hasAnyAuthority("COORDINADOR")
+                        .anyRequest().authenticated())// Esto garantiza que el resto de rutas requieren autenticación
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -61,6 +62,7 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
+
 
     @Bean
     PasswordEncoder passwordEncoder() {

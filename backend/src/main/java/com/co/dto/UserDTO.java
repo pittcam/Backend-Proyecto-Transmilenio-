@@ -12,7 +12,7 @@ public class UserDTO {
     private String cedula;
     private String correo;
     private String contrasena;
-    private String role;
+    private String rol;
 
     public UserDTO() {
 
