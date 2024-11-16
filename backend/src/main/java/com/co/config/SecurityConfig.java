@@ -46,10 +46,13 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/autenticacion/**").permitAll() // Permitir acceso público para autenticación
+                        .requestMatchers("/usuarios").permitAll()
+                        .requestMatchers("/rutas").permitAll()
+
                         .requestMatchers("/rutas/search").hasAnyAuthority("USER", "COORDINADOR") // Acceso a `/rutas/search`
-                        .requestMatchers(HttpMethod.GET, "/rutas/{id}").hasAnyAuthority("USER", "COORDINADOR") // Acceso de GET `/rutas/{id}`
-                        .requestMatchers("/rutas/**").hasAnyAuthority("COORDINADOR") // Acceso completo a cualquier endpoint de `/rutas` para `COORDINADOR`
-                        .requestMatchers("/rutas").hasAnyAuthority("USER") // Acceso de `USER` a la raíz `/rutas`
+                        .requestMatchers(HttpMethod.GET, "/rutas/{id}").hasAnyAuthority("USER", "COORDINADOR","ADMIN") // Acceso de GET `/rutas/{id}`
+                        .requestMatchers("/rutas/**").hasAnyAuthority("COORDINADOR","ADMIN") // Acceso completo a cualquier endpoint de `/rutas` para `COORDINADOR`
+                        // Acceso de `USER` a la raíz `/rutas`
 
                         .requestMatchers("/conductor/**").hasAnyAuthority("ADMIN")
                         .requestMatchers("/bus/**").hasAnyAuthority("ADMIN")

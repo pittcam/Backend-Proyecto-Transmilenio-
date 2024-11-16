@@ -9,5 +9,8 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Integer> {
     // Since email is unique, we'll find users by email
     Optional<User> findByUsername(String username);
+    boolean existsByCorreo(String correo);
+    boolean existsByUsername(String username);
+    boolean existsByCedula(String cedula);
 }
 

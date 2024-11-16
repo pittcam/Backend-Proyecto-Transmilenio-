@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
 
@@ -44,6 +45,7 @@ public class JwtService {
     }
 
     private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+
         return Jwts.builder().claims(extraClaims).subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + tokeDuration.toMillis()))
