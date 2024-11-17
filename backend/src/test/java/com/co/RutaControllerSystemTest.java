@@ -110,16 +110,12 @@ public class RutaControllerSystemTest {
 
     @Test
     void crearRutaCorrecto() {
-        // Navegar a la página de crear ruta
         page.navigate(baseUrl + "/rutas/crear");
 
-        // Ingresar el nombre de la nueva ruta en el formulario
         page.fill("input[name='nombre']", "Ruta Test");
 
-        // Hacer clic en el botón de crear ruta
         page.click(".btn-create");
 
-        // Esperar un momento para que la ruta se cree y la UI se actualice
         page.waitForTimeout(1000);
 
         // Verificar que la nueva ruta se haya agregado a la lista

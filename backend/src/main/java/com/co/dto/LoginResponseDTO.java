@@ -12,7 +12,5 @@ public class LoginResponseDTO {
     private String accessToken;
     private String rol;
 
-
-
 }
 

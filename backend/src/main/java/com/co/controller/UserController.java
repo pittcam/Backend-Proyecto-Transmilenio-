@@ -58,6 +58,7 @@ public class UserController {
         usuario.setRol(rolUser);
 
         userRepository.save(usuario);
+        System.out.println("Usuario registrado: " + usuario);
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)

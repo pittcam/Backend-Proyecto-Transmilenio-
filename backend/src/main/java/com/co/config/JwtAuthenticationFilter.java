@@ -47,6 +47,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
             jwt = authHeader.substring(7);
             userName = jwtService.extractUserName(jwt);
+            log.info("Usuario guardado con username: "+userName); // Verificar si el usuario se guarda
+
             if (StringUtils.hasText(userName)
                     && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userService.userDetailsService()

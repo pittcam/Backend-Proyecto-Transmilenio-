@@ -49,9 +49,9 @@ public class SecurityConfig {
                         .requestMatchers("/usuarios").permitAll()
                         .requestMatchers("/rutas").permitAll()
 
+                        .requestMatchers("/rutas/**").hasAnyAuthority("COORDINADOR","ADMIN") // Acceso completo a cualquier endpoint de `/rutas` para `COORDINADOR`
                         .requestMatchers("/rutas/search").hasAnyAuthority("USER", "COORDINADOR") // Acceso a `/rutas/search`
                         .requestMatchers(HttpMethod.GET, "/rutas/{id}").hasAnyAuthority("USER", "COORDINADOR","ADMIN") // Acceso de GET `/rutas/{id}`
-                        .requestMatchers("/rutas/**").hasAnyAuthority("COORDINADOR","ADMIN") // Acceso completo a cualquier endpoint de `/rutas` para `COORDINADOR`
                         // Acceso de `USER` a la raíz `/rutas`
 
                         .requestMatchers("/conductor/**").hasAnyAuthority("ADMIN")
