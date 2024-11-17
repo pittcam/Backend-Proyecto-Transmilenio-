@@ -45,24 +45,18 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/autenticacion/**").permitAll() // Permitir acceso público para autenticación
+                        .requestMatchers("/autenticacion/**").permitAll() // Acceso público
                         .requestMatchers("/usuarios").permitAll()
                         .requestMatchers("/rutas").permitAll()
-
-                        .requestMatchers("/rutas/**").hasAnyAuthority("COORDINADOR","ADMIN") // Acceso completo a cualquier endpoint de `/rutas` para `COORDINADOR`
-                        .requestMatchers("/rutas/search").hasAnyAuthority("USER", "COORDINADOR") // Acceso a `/rutas/search`
-                        .requestMatchers(HttpMethod.GET, "/rutas/{id}").hasAnyAuthority("USER", "COORDINADOR","ADMIN") // Acceso de GET `/rutas/{id}`
-                        // Acceso de `USER` a la raíz `/rutas`
-
+                        .requestMatchers(HttpMethod.GET, "/rutas/search").hasAnyAuthority("USER", "COORDINADOR")
+                        .requestMatchers(HttpMethod.GET, "/rutas/*").hasAnyAuthority("USER", "COORDINADOR", "ADMIN") // Cambiado {id} a *
+                        .requestMatchers("/rutas/**").hasAnyAuthority("COORDINADOR", "ADMIN")
                         .requestMatchers("/conductor/**").hasAnyAuthority("ADMIN")
                         .requestMatchers("/bus/**").hasAnyAuthority("ADMIN")
                         .requestMatchers("/asignacion/**").hasAnyAuthority("ADMIN")
                         .requestMatchers("/bus-ruta-dia/**").hasAnyAuthority("ADMIN")
-
-                        .requestMatchers("/estacion/**").hasAnyAuthority("ADMIN", "COORDINADOR","USER")
-
-
-                        .anyRequest().authenticated())// Esto garantiza que el resto de rutas requieren autenticación
+                        .requestMatchers("/estacion/**").hasAnyAuthority("ADMIN", "COORDINADOR", "USER")
+                        .anyRequest().authenticated()) // Todo lo demás requiere autenticación
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -76,6 +70,7 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
+
     }
 
 
