@@ -5,11 +5,14 @@ import com.co.model.*;
 import com.co.repository.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,12 +25,15 @@ import java.util.Set;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
+@Nested
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-testing")
-public class AsignacionControllerTest {
+class AsignacionControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -53,6 +59,15 @@ public class AsignacionControllerTest {
     @Autowired
     private BusRutaDiaRepository busRutaDiaRepository;
 
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     private Asignacion asignacion1;
     private Bus bus1;
     private Conductor conductor1;
@@ -70,6 +85,23 @@ public class AsignacionControllerTest {
         busRepository.deleteAll();
         conductorRepository.deleteAll();
         rutaRepository.deleteAll();
+        userRepository.deleteAll();
+        roleRepository.deleteAll();
+
+        // Crear el rol ADMIN
+        Rol rolAdmin = new Rol();
+        rolAdmin.setTipoRol("ADMIN");  // Cambiado para coincidir con SecurityConfig
+        rolAdmin = roleRepository.saveAndFlush(rolAdmin);
+
+        // Crear el usuario admin
+        User adminUser = new User();
+        adminUser.setNombre("Juan");
+        adminUser.setCedula("123455");
+        adminUser.setCorreo("juan@exam.co");
+        adminUser.setUsername("admin");
+        adminUser.setContrasena(passwordEncoder.encode("adminpass"));
+        adminUser.setRol(rolAdmin);
+        userRepository.saveAndFlush(adminUser);
 
         // Crear estaciones
         estacion1 = new Estacion();
@@ -109,7 +141,7 @@ public class AsignacionControllerTest {
         busRutaDia1.setBus(bus1);
         busRutaDia1 = busRutaDiaRepository.saveAndFlush(busRutaDia1);
 
-        // Crear una asignación para el conductor con el bus y días asignados
+        // Crear una asignación
         asignacion1 = new Asignacion();
         asignacion1.setConductor(conductor1);
         asignacion1.setBusRutaDias(new ArrayList<>(List.of(busRutaDia1)));
@@ -117,10 +149,12 @@ public class AsignacionControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", authorities = {"ADMIN"})  // Cambiado para coincidir con SecurityConfig
     @Transactional
     public void testGetAllAsignaciones() throws Exception {
         mockMvc.perform(get("/asignacion")
                         .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(1)))
@@ -130,6 +164,7 @@ public class AsignacionControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", authorities = {"ADMIN"})
     @Transactional
     public void testGetAsignacionById() throws Exception {
         mockMvc.perform(get("/asignacion/{id}", asignacion1.getId())
@@ -141,6 +176,7 @@ public class AsignacionControllerTest {
 
 
     @Test
+    @WithMockUser(username = "admin", authorities = {"ADMIN"})
     @Transactional
     public void testGetBusesPorConductor() throws Exception {
         mockMvc.perform(get("/asignacion/conductor/{conductorId}/buses", conductor1.getId())
@@ -152,6 +188,7 @@ public class AsignacionControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", authorities = {"ADMIN"})
     @Transactional
     public void testGetBusesPorConductorInexistente() throws Exception {
         mockMvc.perform(get("/asignacion/conductor/{conductorId}/buses", 999999L)
@@ -160,6 +197,7 @@ public class AsignacionControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", authorities = {"ADMIN"})
     @Transactional
     public void testAsignarRutaABus() throws Exception {
         Bus newBus = new Bus();
@@ -183,6 +221,7 @@ public class AsignacionControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", authorities = {"ADMIN"})
     @Transactional
     public void testDeleteAsignacion() throws Exception {
         mockMvc.perform(delete("/asignacion/{id}", asignacion1.getId())
@@ -197,6 +236,7 @@ public class AsignacionControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", authorities = {"ADMIN"})
     @Transactional
     public void testListarBuses() throws Exception {
         mockMvc.perform(get("/asignacion/buses")
@@ -208,6 +248,7 @@ public class AsignacionControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", authorities = {"ADMIN"})
     @Transactional
     public void testListarRutas() throws Exception {
         mockMvc.perform(get("/asignacion/rutas")
@@ -219,6 +260,7 @@ public class AsignacionControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", authorities = {"ADMIN"})
     @Transactional
     public void testObtenerAsignacionPorConductor() throws Exception {
         mockMvc.perform(get("/asignacion/conductor/{conductorId}", conductor1.getId())
@@ -229,6 +271,7 @@ public class AsignacionControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", authorities = {"ADMIN"})
     @Transactional
     public void testCrearAsignacion() throws Exception {
         // Crear un nuevo conductor para esta prueba
