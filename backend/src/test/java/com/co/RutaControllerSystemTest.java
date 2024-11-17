@@ -4,15 +4,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.co.model.Estacion;
+import com.co.model.Rol;
+import com.co.model.User;
 import com.co.repository.EstacionRepository;
 import com.co.model.Ruta;
+import com.co.repository.RoleRepository;
 import com.co.repository.RutaRepository;
+import com.co.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
@@ -32,7 +37,16 @@ public class RutaControllerSystemTest {
     private RutaRepository rutaRepository;
 
     @Autowired
-    private EstacionRepository estacionRepository;  // Asegúrate de que esta línea esté presente y correctamente inyectada
+    private EstacionRepository estacionRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     private Playwright playwright;
     private Browser browser;
@@ -61,6 +75,27 @@ public class RutaControllerSystemTest {
         ruta1.setDias(List.of("Lunes", "Martes"));
         ruta1 = rutaRepository.saveAndFlush(ruta1);
 
+        // Crear coordinador
+        Rol rol3 = new Rol();
+        rol3.setTipoRol("COORDINADOR");
+        rol3 = roleRepository.saveAndFlush(rol3);
+
+        // Verificar si ya existe un usuario con la cédula que vamos a usar
+        String cedula = "123457"; // Cédula a usar para el coordinador
+        if (userRepository.existsByCedula(cedula)) {
+            // Si ya existe, generar una cédula única (puedes usar un valor dinámico como un timestamp)
+            cedula = String.valueOf(System.currentTimeMillis()); // Genera un valor único
+        }
+
+        User user3 = new User();
+        user3.setNombre("simon");
+        user3.setCedula(cedula);  // Usamos la cédula única verificada
+        user3.setCorreo("simon@gmail.com");
+        user3.setUsername("coordinador1");
+        user3.setContrasena(passwordEncoder.encode("coordinadorpass"));
+        user3.setRol(rol3);
+        user3 = userRepository.saveAndFlush(user3);
+
         // Configuración de Playwright
         this.playwright = Playwright.create();
         this.browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(true));
@@ -76,8 +111,13 @@ public class RutaControllerSystemTest {
 
     @Test
     void obtenerRutasCorrecto() {
-        // Navegar a la página que muestra las rutas
-        page.navigate(baseUrl + "/rutas");
+        // Iniciar sesión como coordinador
+        page.navigate(baseUrl + "/login");
+        page.fill("input[name='usuario']", "coordinador1");
+        page.fill("input[name='password']", "coordinadorpass");
+        page.click("button[type='submit']");
+
+        page.waitForTimeout(1000);
 
         // Validar que solo la ruta "Ruta 1" se muestre correctamente
         page.locator(".ruta-name:has-text('Ruta 1')").waitFor();
@@ -91,8 +131,13 @@ public class RutaControllerSystemTest {
 
     @Test
     void eliminarRutaCorrecto() {
-        // Navegar a la página que muestra las rutas
-        page.navigate(baseUrl + "/rutas");
+        // Iniciar sesión como coordinador
+        page.navigate(baseUrl + "/login");
+        page.fill("input[name='usuario']", "coordinador1");
+        page.fill("input[name='password']", "coordinadorpass");
+        page.click("button[type='submit']");
+
+        page.waitForTimeout(1000);
 
         // Esperar que la ruta "Ruta 1" esté visible antes de eliminar
         page.locator("text=Ruta 1").waitFor();
@@ -110,6 +155,15 @@ public class RutaControllerSystemTest {
 
     @Test
     void crearRutaCorrecto() {
+        // Iniciar sesión como coordinador
+        page.navigate(baseUrl + "/login");
+        page.fill("input[name='usuario']", "coordinador1");
+        page.fill("input[name='password']", "coordinadorpass");
+        page.click("button[type='submit']");
+
+        page.waitForTimeout(1000);
+
+        // Navegar a la página de creación de rutas
         page.navigate(baseUrl + "/rutas/crear");
 
         page.fill("input[name='nombre']", "Ruta Test");
@@ -123,13 +177,15 @@ public class RutaControllerSystemTest {
         assertTrue(isRutaTestVisible, "La ruta 'Ruta Test' debería haberse creado y mostrado en la pantalla.");
     }
 
-
     @Test
     void editarRutaCorrecto() {
-        // Crear una ruta "Ruta 1" como en el test anterior
+        // Iniciar sesión como coordinador
+        page.navigate(baseUrl + "/login");
+        page.fill("input[name='usuario']", "coordinador1");
+        page.fill("input[name='password']", "coordinadorpass");
+        page.click("button[type='submit']");
 
-        // Navegar a la página que lista las rutas
-        page.navigate(baseUrl + "/rutas");
+        page.waitForTimeout(1000);
 
         // Esperar que la ruta "Ruta 1" esté visible
         page.locator("text=Ruta 1").waitFor();
@@ -153,6 +209,4 @@ public class RutaControllerSystemTest {
         boolean isRutaEditadaVisible = page.locator("text=Ruta Editada").isVisible();
         assertTrue(isRutaEditadaVisible, "La ruta debería haberse actualizado a 'Ruta Editada' en la pantalla.");
     }
-
-
 }
